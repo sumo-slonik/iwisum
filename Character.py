@@ -3,11 +3,11 @@ MapSize = 25  # how many tiles in either direction of grid
 
 
 class Character(object):  # Characters can move around and do cool stuff
-    def __init__(self, Name, HP, Column, Row):
+    def __init__(self, Name, Column, Row,Map):
         self.Name = Name
-        self.HP = HP
         self.Column = Column
         self.Row = Row
+        self.Map = Map
 
     def Move(self, Direction):  # This function is how a character moves around in a certain direction
 
@@ -31,21 +31,19 @@ class Character(object):  # Characters can move around and do cool stuff
                 if self.CollisionCheck("DOWN") == False:
                     self.Row += 1
 
-        Map.update()
-
     def CollisionCheck(self,
                        Direction):  # Checks if anything is on top of the grass in the direction that the character wants to move. Used in the move function
         if Direction == "UP":
-            if len(Map.Grid[self.Column][(self.Row) - 1]) > 1:
+            if len(self.Map.Grid[self.Column][(self.Row) - 1]) > 1:
                 return True
         elif Direction == "LEFT":
-            if len(Map.Grid[self.Column - 1][(self.Row)]) > 1:
+            if len(self.Map.Grid[self.Column - 1][(self.Row)]) > 1:
                 return True
         elif Direction == "RIGHT":
-            if len(Map.Grid[self.Column + 1][(self.Row)]) > 1:
+            if len(self.Map.Grid[self.Column + 1][(self.Row)]) > 1:
                 return True
         elif Direction == "DOWN":
-            if len(Map.Grid[self.Column][(self.Row) + 1]) > 1:
+            if len(self.Map.Grid[self.Column][(self.Row) + 1]) > 1:
                 return True
         return False
 
