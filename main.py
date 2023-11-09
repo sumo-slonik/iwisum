@@ -1,6 +1,7 @@
-import pygame as pygame
-import json
-from Map import Map
+import pygame
+
+from src.maze import Maze
+
 pygame.init()  # start up dat pygame
 clock = pygame.time.Clock()  # for framerate or something? still not very sure
 Screen = pygame.display.set_mode([650, 650])  # making the window
@@ -15,10 +16,14 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
-if __name__ == '__main__':
-    Map = Map("map.json")
+if __name__ == "__main__":
+    maze = Maze("data/map.json")
     Screen = pygame.display.set_mode(
-        [Map.height * (TileWidth + TileMargin), Map.height * (TileHeight + TileMargin)])  # making the window
+        [
+            maze.height * (TileWidth + TileMargin),
+            maze.height * (TileHeight + TileMargin),
+        ]
+    )  # making the window
 
     while not Done:  # Main pygame loop
         for event in pygame.event.get():  # catching events
@@ -27,14 +32,14 @@ if __name__ == '__main__':
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    Map.Hero.Move("LEFT")
+                    maze.mouse.move("LEFT")
                 if event.key == pygame.K_RIGHT:
-                    Map.Hero.Move("RIGHT")
+                    maze.mouse.move("RIGHT")
                 if event.key == pygame.K_UP:
-                    Map.Hero.Move("UP")
+                    maze.mouse.move("UP")
                 if event.key == pygame.K_DOWN:
-                    Map.Hero.Move("DOWN")
-        Map.draw()
+                    maze.mouse.move("DOWN")
+        maze.draw()
         clock.tick(60)  # Limit to 60 fps or something
         pygame.display.flip()  # Honestly not sure what this does, but it breaks if I remove it
 
