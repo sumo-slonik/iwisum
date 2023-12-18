@@ -28,11 +28,13 @@ class Maze:  # The main class; where the action happens
 
         self.mouse = Mouse(maze["start_column"], maze["start_row"], self)
 
+        self.clock = pygame.time.Clock()
+
     def draw(self):
         Screen.fill(BLACK)
         for row in range(self.height):  # Drawing grid
             for column in range(self.width):
-                cases = {0: WHITE, 1: RED, 2: GREEN}
+                cases = {0: WHITE, 1: RED, 2: GREEN, 3: BLUE}
 
                 pygame.draw.rect(
                     Screen,
@@ -44,3 +46,6 @@ class Maze:  # The main class; where the action happens
                         TILE_HEIGHT,
                     ],
                 )
+
+        self.clock.tick(60)  # Limit to 60 fps or something
+        pygame.display.flip()
