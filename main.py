@@ -17,7 +17,8 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 
 if __name__ == "__main__":
-    maze = Maze("data/map.json")
+
+    maze = Maze("data/testowy.json")
     Screen = pygame.display.set_mode(
         [
             maze.height * (TileWidth + TileMargin),
