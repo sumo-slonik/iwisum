@@ -1,6 +1,8 @@
 import json
 import random
+
 import numpy as np
+
 
 def create_maze(dim):
     # Create a grid filled with walls
@@ -21,13 +23,7 @@ def create_maze(dim):
 
         for dx, dy in directions:
             nx, ny = x + dx, y + dy
-            if (
-                nx >= 0
-                and ny >= 0
-                and nx < dim
-                and ny < dim
-                and maze[2 * nx + 1, 2 * ny + 1] == 1
-            ):
+            if 0 <= nx < dim and 0 <= ny < dim and maze[2 * nx + 1, 2 * ny + 1] == 1:
                 maze[2 * nx + 1, 2 * ny + 1] = 0
                 maze[2 * x + 1 + dx, 2 * y + 1 + dy] = 0
                 stack.append((nx, ny))
@@ -51,7 +47,7 @@ def generate_maze_to_json(name, size):
         "start_column": 0,
         "map": maze,
     }
-    with open(name, "w") as file:
+    with open(name, "w", encoding="utf-8") as file:
         json.dump(json_maze, file)
 
 
