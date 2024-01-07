@@ -1,4 +1,3 @@
-import os
 import random
 
 import numpy as np
@@ -6,26 +5,25 @@ import tensorflow as tf
 
 from src.maze import Maze
 from src.mouse import Mouse
+from src.rewards import Reward
 
 
 class Solver:
     def __init__(self, map_file_path: str):
-        os.environ["TF_CPP_MIN_LOG_LEVEL"] = "99"
-        tf.get_logger().setLevel("ERROR")
-        tf.autograph.set_verbosity(0)
-        tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
         tf.keras.utils.disable_interactive_logging()
 
         self.num_actions = 4
-        self.learning_rate = 0.1
+        self.learning_rate = 0.8
         self.discount_factor = 0.8
-        self.epsilon = 0.6
+        self.epsilon = 0.5
         self.epsilon_decrease = 0.999
         self.min_epsilon = 0.1
         self.num_episodes = 1000
 
         self.maze = Maze(map_file_path)
         self.model = self.create_model()
+
+        self.max_moves = self.maze.height * self.maze.width
 
     def create_model(self) -> tf.keras.models.Sequential:
         model = tf.keras.models.Sequential()
@@ -68,46 +66,46 @@ class Solver:
     def start_learning(self):
         for episode in range(self.num_episodes):
             self.maze.draw()
-            done = False
 
-            while not done:
+            while self.maze.mouse.tries < self.max_moves:
                 state = np.array([self.maze.mouse.row, self.maze.mouse.column]).reshape(
-                    1, 2
+                    1, -1
                 )
                 action = self.get_action(state)
-
                 reward = self.maze.mouse.move(action)
 
                 self.maze.draw()
 
                 next_state = np.array(
                     [self.maze.mouse.row, self.maze.mouse.column]
-                ).reshape(1, 2)
-                self.update_q_table(state, action, reward, next_state)
+                ).reshape(1, -1)
+                self.update_q_table(state, action, reward.value, next_state)
 
-                if reward < 0:
-                    self.maze.mouse.reset()
-                    done = True
+                if reward == Reward.FINISH:
+                    print("Reached the target")
+                    break
 
             if episode % 10 == 0 and self.epsilon > self.min_epsilon:
                 self.epsilon *= self.epsilon_decrease
 
+            self.maze.mouse.reset()
+
         print("Training complete.")
 
     def predict(self):
-        done = False
+        self.maze.draw()
 
-        while not done:
+        while self.maze.mouse.tries < self.max_moves:
             state = np.array([self.maze.mouse.row, self.maze.mouse.column]).reshape(
-                1, 2
+                1, -1
             )
             action = self.get_action(state)
-
             reward = self.maze.mouse.move(action)
-            if reward < 0:
-                done = True
-            elif reward == 10:
+
+            self.maze.draw()
+
+            if reward == Reward.FINISH:
                 print("The target has been reached!")
-                done = True
+                break
 
         print("Final position:", (self.maze.mouse.row, self.maze.mouse.column))
