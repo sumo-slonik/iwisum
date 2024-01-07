@@ -1,4 +1,5 @@
 from enum import Enum
+from src.rewards import Reward
 
 
 class Mouse:  # Characters can move around and do cool stuff
@@ -16,13 +17,15 @@ class Mouse:  # Characters can move around and do cool stuff
         self.column = column
         self.row = row
         self.maze = maze
+        self.tries = 0
 
         self.maze.grid[self.row][self.column] = 2
 
-    def move(self, direction) -> int:
+    def move(self, direction) -> Reward:
         """
         This function is how a character moves around in a certain direction
         """
+        self.tries += 1
         return {
             self.Moves.UP: self.move_up,
             self.Moves.DOWN: self.move_down,
@@ -30,49 +33,42 @@ class Mouse:  # Characters can move around and do cool stuff
             self.Moves.RIGHT: self.move_right,
         }[direction]()
 
-    def move_up(self) -> int:
+    def move_up(self) -> Reward:
         if self.row > 0 and not self.collision(self.Moves.UP):
-            self.maze.grid[self.row][self.column] = 0
+            self.maze.grid[self.row][self.column] = 4
             self.row -= 1
+            return self.get_reward()
+        return Reward.COLLISION
 
-            self.end_reached()
-
-            self.maze.grid[self.row][self.column] = 2
-            return 5
-        return -5
-
-    def move_down(self) -> int:
+    def move_down(self) -> Reward:
         if self.row < self.maze.height - 1 and not self.collision(self.Moves.DOWN):
-            self.maze.grid[self.row][self.column] = 0
+            self.maze.grid[self.row][self.column] = 4
             self.row += 1
+            return self.get_reward()
+        return Reward.COLLISION
 
-            self.end_reached()
-
-            self.maze.grid[self.row][self.column] = 2
-            return 5
-        return -5
-
-    def move_left(self) -> int:
+    def move_left(self) -> Reward:
         if self.column > 0 and not self.collision(self.Moves.LEFT):
-            self.maze.grid[self.row][self.column] = 0
+            self.maze.grid[self.row][self.column] = 4
             self.column -= 1
+            return self.get_reward()
+        return Reward.COLLISION
 
-            self.end_reached()
-
-            self.maze.grid[self.row][self.column] = 2
-            return 5
-        return -5
-
-    def move_right(self) -> int:
+    def move_right(self) -> Reward:
         if self.column < self.maze.width - 1 and not self.collision(self.Moves.RIGHT):
-            self.maze.grid[self.row][self.column] = 0
+            self.maze.grid[self.row][self.column] = 4
             self.column += 1
+            return self.get_reward()
 
-            self.end_reached()
+        return Reward.COLLISION
 
-            self.maze.grid[self.row][self.column] = 2
-            return 5
-        return -5
+    def get_reward(self) -> Reward:
+        if self.end_reached():
+            return Reward.FINISH
+
+        was_visited = self.maze.grid[self.row][self.column]
+        self.maze.grid[self.row][self.column] = 2
+        return Reward.VISITED if was_visited == 4 else Reward.MOVE
 
     def collision(self, direction: Moves) -> bool:
         """
@@ -80,26 +76,30 @@ class Mouse:  # Characters can move around and do cool stuff
         that the character wants to move. Used in the move function
         """
         if direction == self.Moves.UP:
-            if self.maze.grid[self.row - 1][self.column] != 0:
+            if self.maze.grid[self.row - 1][self.column] == 1:
                 return True
         elif direction == self.Moves.LEFT:
-            if self.maze.grid[self.row][self.column - 1] != 0:
+            if self.maze.grid[self.row][self.column - 1] == 1:
                 return True
         elif direction == self.Moves.RIGHT:
-            if self.maze.grid[self.row][self.column + 1] != 0:
+            if self.maze.grid[self.row][self.column + 1] == 1:
                 return True
         elif direction == self.Moves.DOWN:
-            if self.maze.grid[self.row + 1][self.column] != 0:
+            if self.maze.grid[self.row + 1][self.column] == 1:
                 return True
         return False
 
     def reset(self):
+        for row in range(self.maze.height):
+            for column in range(self.maze.width):
+                if self.maze.grid[row][column] == 4:
+                    self.maze.grid[row][column] = 0
+
         self.maze.grid[self.row][self.column] = 0
         self.column = 0
         self.row = 0
         self.maze.grid[self.row][self.column] = 2
+        self.tries = 0
 
-    def end_reached(self) -> int:
-        if self.maze.grid[self.row][self.column] == 3:
-            return 10
-        return 0
+    def end_reached(self) -> bool:
+        return self.maze.grid[self.row][self.column] == 3

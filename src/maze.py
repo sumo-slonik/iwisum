@@ -9,6 +9,7 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
+GRAY = (127, 127, 127)
 
 TILE_WIDTH = 20  # pixel sizes for grid squares
 TILE_HEIGHT = 20
@@ -34,7 +35,7 @@ class Maze:  # The main class; where the action happens
         Screen.fill(BLACK)
         for row in range(self.height):  # Drawing grid
             for column in range(self.width):
-                cases = {0: WHITE, 1: RED, 2: GREEN, 3: BLUE}
+                cases = {0: WHITE, 1: RED, 2: GREEN, 3: BLUE, 4: GRAY}
 
                 pygame.draw.rect(
                     Screen,
