@@ -83,12 +83,14 @@ class Solver:
 
                 if reward == Reward.FINISH:
                     print("Reached the target")
+                    self.maze.mouse.reset(target_reached=True)
                     break
+
+            else:
+                self.maze.mouse.reset(target_reached=False)
 
             if episode % 10 == 0 and self.epsilon > self.min_epsilon:
                 self.epsilon *= self.epsilon_decrease
-
-            self.maze.mouse.reset()
 
         print("Training complete.")
 

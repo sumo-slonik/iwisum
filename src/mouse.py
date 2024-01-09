@@ -36,39 +36,78 @@ class Mouse:  # Characters can move around and do cool stuff
     def move_up(self) -> Reward:
         if self.row > 0 and not self.collision(self.Moves.UP):
             self.maze.grid[self.row][self.column] = 4
+
             self.row -= 1
-            return self.get_reward()
+
+            was_end_reached = self.maze.grid[self.row][self.column] == 3
+            was_visited = self.maze.grid[self.row][self.column] == 4
+
+            self.maze.grid[self.row][self.column] = 2
+
+            if was_visited:
+                return Reward.VISITED
+            elif was_end_reached:
+                return Reward.FINISH
+            else:
+                return Reward.MOVE
         return Reward.COLLISION
 
     def move_down(self) -> Reward:
         if self.row < self.maze.height - 1 and not self.collision(self.Moves.DOWN):
             self.maze.grid[self.row][self.column] = 4
+
             self.row += 1
-            return self.get_reward()
+
+            was_end_reached = self.maze.grid[self.row][self.column] == 3
+            was_visited = self.maze.grid[self.row][self.column] == 4
+
+            self.maze.grid[self.row][self.column] = 2
+
+            if was_visited:
+                return Reward.VISITED
+            elif was_end_reached:
+                return Reward.FINISH
+            else:
+                return Reward.MOVE
         return Reward.COLLISION
 
     def move_left(self) -> Reward:
         if self.column > 0 and not self.collision(self.Moves.LEFT):
             self.maze.grid[self.row][self.column] = 4
+
             self.column -= 1
-            return self.get_reward()
+
+            was_end_reached = self.maze.grid[self.row][self.column] == 3
+            was_visited = self.maze.grid[self.row][self.column] == 4
+
+            self.maze.grid[self.row][self.column] = 2
+
+            if was_visited:
+                return Reward.VISITED
+            elif was_end_reached:
+                return Reward.FINISH
+            else:
+                return Reward.MOVE
         return Reward.COLLISION
 
     def move_right(self) -> Reward:
         if self.column < self.maze.width - 1 and not self.collision(self.Moves.RIGHT):
             self.maze.grid[self.row][self.column] = 4
+
             self.column += 1
-            return self.get_reward()
 
+            was_end_reached = self.maze.grid[self.row][self.column] == 3
+            was_visited = self.maze.grid[self.row][self.column] == 4
+
+            self.maze.grid[self.row][self.column] = 2
+
+            if was_visited:
+                return Reward.VISITED
+            elif was_end_reached:
+                return Reward.FINISH
+            else:
+                return Reward.MOVE
         return Reward.COLLISION
-
-    def get_reward(self) -> Reward:
-        if self.end_reached():
-            return Reward.FINISH
-
-        was_visited = self.maze.grid[self.row][self.column]
-        self.maze.grid[self.row][self.column] = 2
-        return Reward.VISITED if was_visited == 4 else Reward.MOVE
 
     def collision(self, direction: Moves) -> bool:
         """
@@ -89,17 +128,14 @@ class Mouse:  # Characters can move around and do cool stuff
                 return True
         return False
 
-    def reset(self):
+    def reset(self, target_reached):
         for row in range(self.maze.height):
             for column in range(self.maze.width):
                 if self.maze.grid[row][column] == 4:
                     self.maze.grid[row][column] = 0
 
-        self.maze.grid[self.row][self.column] = 0
+        self.maze.grid[self.row][self.column] = 3 if target_reached else 0
         self.column = 0
         self.row = 0
         self.maze.grid[self.row][self.column] = 2
         self.tries = 0
-
-    def end_reached(self) -> bool:
-        return self.maze.grid[self.row][self.column] == 3
