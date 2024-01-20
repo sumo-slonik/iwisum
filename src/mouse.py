@@ -1,5 +1,6 @@
 from enum import Enum
 from src.rewards import Reward
+import math
 
 
 class Mouse:  # Characters can move around and do cool stuff
@@ -21,7 +22,7 @@ class Mouse:  # Characters can move around and do cool stuff
 
         self.maze.grid[self.row][self.column] = 2
 
-    def move(self, direction) -> Reward:
+    def move(self, direction) -> int:
         """
         This function is how a character moves around in a certain direction
         """
@@ -33,7 +34,7 @@ class Mouse:  # Characters can move around and do cool stuff
             self.Moves.RIGHT: self.move_right,
         }[direction]()
 
-    def move_up(self) -> Reward:
+    def move_up(self) -> int:
         if self.row > 0 and not self.collision(self.Moves.UP):
             self.maze.grid[self.row][self.column] = 4
 
@@ -45,14 +46,18 @@ class Mouse:  # Characters can move around and do cool stuff
             self.maze.grid[self.row][self.column] = 2
 
             if was_visited:
-                return Reward.VISITED
+                return Reward.VISITED.value * math.sqrt(
+                    (9 - self.row) ** 2 + (10 - self.column) ** 2
+                )
             elif was_end_reached:
-                return Reward.FINISH
+                return Reward.FINISH.value
             else:
-                return Reward.MOVE
-        return Reward.COLLISION
+                return Reward.MOVE.value * math.sqrt(
+                    (9 - self.row) ** 2 + (10 - self.column) ** 2
+                )
+        return Reward.COLLISION.value
 
-    def move_down(self) -> Reward:
+    def move_down(self) -> int:
         if self.row < self.maze.height - 1 and not self.collision(self.Moves.DOWN):
             self.maze.grid[self.row][self.column] = 4
 
@@ -64,14 +69,18 @@ class Mouse:  # Characters can move around and do cool stuff
             self.maze.grid[self.row][self.column] = 2
 
             if was_visited:
-                return Reward.VISITED
+                return Reward.VISITED.value * math.sqrt(
+                    (9 - self.row) ** 2 + (10 - self.column) ** 2
+                )
             elif was_end_reached:
-                return Reward.FINISH
+                return Reward.FINISH.value
             else:
-                return Reward.MOVE
-        return Reward.COLLISION
+                return Reward.MOVE.value * math.sqrt(
+                    (9 - self.row) ** 2 + (10 - self.column) ** 2
+                )
+        return Reward.COLLISION.value
 
-    def move_left(self) -> Reward:
+    def move_left(self) -> int:
         if self.column > 0 and not self.collision(self.Moves.LEFT):
             self.maze.grid[self.row][self.column] = 4
 
@@ -83,14 +92,18 @@ class Mouse:  # Characters can move around and do cool stuff
             self.maze.grid[self.row][self.column] = 2
 
             if was_visited:
-                return Reward.VISITED
+                return Reward.VISITED.value * math.sqrt(
+                    (9 - self.row) ** 2 + (10 - self.column) ** 2
+                )
             elif was_end_reached:
-                return Reward.FINISH
+                return Reward.FINISH.value
             else:
-                return Reward.MOVE
-        return Reward.COLLISION
+                return Reward.MOVE.value * math.sqrt(
+                    (9 - self.row) ** 2 + (10 - self.column) ** 2
+                )
+        return Reward.COLLISION.value
 
-    def move_right(self) -> Reward:
+    def move_right(self) -> int:
         if self.column < self.maze.width - 1 and not self.collision(self.Moves.RIGHT):
             self.maze.grid[self.row][self.column] = 4
 
@@ -102,12 +115,16 @@ class Mouse:  # Characters can move around and do cool stuff
             self.maze.grid[self.row][self.column] = 2
 
             if was_visited:
-                return Reward.VISITED
+                return Reward.VISITED.value * math.sqrt(
+                    (9 - self.row) ** 2 + (10 - self.column) ** 2
+                )
             elif was_end_reached:
-                return Reward.FINISH
+                return Reward.FINISH.value
             else:
-                return Reward.MOVE
-        return Reward.COLLISION
+                return Reward.MOVE.value * math.sqrt(
+                    (9 - self.row) ** 2 + (10 - self.column) ** 2
+                )
+        return Reward.COLLISION.value
 
     def collision(self, direction: Moves) -> bool:
         """
